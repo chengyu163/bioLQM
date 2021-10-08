@@ -54,7 +54,7 @@ public class PriorityUpdater extends AbstractMultipleSuccessorUpdater {
 			}
 
 			// stop if previous block already generated successors
-			if (currStates != null) {
+			if (!lTmpSucc.isEmpty()) {
 				currStates = lTmpSucc;
 				break;
 			}

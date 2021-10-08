@@ -1,14 +1,14 @@
 package org.colomoto.biolqm.tool.simulation.deterministic;
 
+import org.colomoto.biolqm.InitialStates;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.tool.AbstractToolTask;
-import org.colomoto.biolqm.tool.simulation.InitialStateFactory;
 import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
 
 public class TraceTask extends AbstractToolTask<DeterministicSimulation> {
 
     String updater_config = null;
-    byte[] state = null;
+    byte[] state = InitialStates.getInstace().getRandomState();
     int max_steps = 1000;
     int length = 100;
 
@@ -21,9 +21,7 @@ public class TraceTask extends AbstractToolTask<DeterministicSimulation> {
         if (parameters == null) {
             return;
         }
-
-        StringBuffer tmp = new StringBuffer();
-
+        
         for (int idx=0 ; idx<parameters.length ; idx++) {
 
             String s = parameters[idx].trim();
@@ -56,9 +54,6 @@ public class TraceTask extends AbstractToolTask<DeterministicSimulation> {
                         continue;
                     case 'l':
                         parseLength(next);
-                        continue;
-                    case 'i':
-                        this.state = InitialStateFactory.parseInitialState(this.model, next);
                         continue;
                 }
             }

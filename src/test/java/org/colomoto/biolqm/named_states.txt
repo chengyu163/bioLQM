@@ -1,0 +1,6 @@
+state1 0110
+state2 0111
+state3 1100
+state4 1010
+state1 0001
+state3 1000

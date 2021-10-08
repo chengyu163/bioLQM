@@ -109,7 +109,24 @@
 		<artifactId>txtmark</artifactId>
 		<version>0.13</version>
 	</dependency>
+	
+	<dependency>
+	    <groupId>org.knowm.xchart</groupId>
+	    <artifactId>xchart</artifactId>
+	    <version>3.5.2</version>
+	</dependency>
 
+	<dependency>
+	    <groupId>org.ejml</groupId>
+	    <artifactId>ejml-simple</artifactId>
+	    <version>0.32</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.9</version>
+	</dependency>
   </dependencies>
 
 

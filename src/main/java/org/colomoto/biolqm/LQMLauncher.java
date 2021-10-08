@@ -1,16 +1,18 @@
 package org.colomoto.biolqm;
 
+import java.io.File;
+import java.util.Arrays;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.colomoto.biolqm.io.LogicalModelFormat;
 import org.colomoto.biolqm.modifier.ModelModifierService;
 import org.colomoto.biolqm.modifier.perturbation.PerturbationService;
 import org.colomoto.biolqm.service.ExtensionLoader;
 import org.colomoto.biolqm.service.LQMServiceManager;
 import org.colomoto.biolqm.tool.ModelToolService;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import java.io.File;
-import java.util.Arrays;
 
 /**
  * Entry point to launch the bioLQM toolbox.
@@ -26,10 +28,11 @@ public class LQMLauncher {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		
 
         ExtensionLoader.loadExtensions("extensions", LQMLauncher.class);
 
-		if (args.length < 2) {
+		if (args.length < 2 ) {
 			error("not enough arguments");
 			return;
         }
@@ -59,6 +62,31 @@ public class LQMLauncher {
 		
 		String inputFilename = args[argIdx++];
 		LogicalModel model = LQMServiceManager.load(inputFilename, inputFormat);
+		
+		if(ArrayUtils.contains(args, "-ns")){
+			int index = ArrayUtils.indexOf(args, "-ns");
+			String fileName = args[index+1];
+			NamedState namedStates = NamedState.getInstance();
+			namedStates.setModelSize(model.getComponents().size());
+			namedStates.parseNamedStateFile(fileName);
+			args = ArrayUtils.remove(args, index+1);
+			args = ArrayUtils.remove(args, index);
+		}
+		
+		if(ArrayUtils.contains(args, "-i")) {
+			int index = ArrayUtils.indexOf(args, "-i");
+			String pattern = args[index+1]; 
+			/* the pattern can be a named state or union of states specified */
+			InitialStates initialStates = InitialStates.getInstace();
+			initialStates.setPattern(pattern);
+			args = ArrayUtils.remove(args, index+1);
+			args = ArrayUtils.remove(args, index);
+		}
+		
+		/*code used for the lazy initialization of named state and initial states */
+		InitialStates initialStates = InitialStates.getInstace();
+		NamedState namedStates = NamedState.getInstance();
+		initialStates.parsePatternToStates(model, namedStates);
 		
 		while (true) {
 			if ("-m".equals(args[argIdx])) {
@@ -118,6 +146,8 @@ public class LQMLauncher {
 			
 			break;
 		}
+		
+	
 		
 		if ("-r".equals(args[argIdx]) ) {
 			if (args.length < argIdx+2) {

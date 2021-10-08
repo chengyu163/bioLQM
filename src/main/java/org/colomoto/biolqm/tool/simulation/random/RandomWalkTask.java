@@ -1,14 +1,14 @@
 package org.colomoto.biolqm.tool.simulation.random;
 
+import org.colomoto.biolqm.InitialStates;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.tool.AbstractToolTask;
-import org.colomoto.biolqm.tool.simulation.InitialStateFactory;
 import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
 
 public class RandomWalkTask extends AbstractToolTask<RandomWalkSimulation> {
 
     String updater_config = null;
-    byte[] state = null;
+    byte[] state = InitialStates.getInstace().getRandomState();
     int max_steps = 1000;
     int seed = -1;
 
@@ -21,8 +21,6 @@ public class RandomWalkTask extends AbstractToolTask<RandomWalkSimulation> {
         if (parameters == null || parameters.length < 1) {
             return;
         }
-
-        StringBuffer tmp = new StringBuffer();
 
         for (int idx=0 ; idx<parameters.length ; idx++) {
 
@@ -57,12 +55,8 @@ public class RandomWalkTask extends AbstractToolTask<RandomWalkSimulation> {
                     case 's':
                         parseSeed(next);
                         continue;
-                    case 'i':
-                        this.state = InitialStateFactory.parseInitialState(this.model, next);
-                        continue;
                 }
             }
-
             throw new RuntimeException("Unrecognized parameter: "+s);
         }
     }

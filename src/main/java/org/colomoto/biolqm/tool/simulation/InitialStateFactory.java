@@ -4,11 +4,10 @@ import org.colomoto.biolqm.LogicalModel;
 
 public class InitialStateFactory {
 
-    public static byte[] parseInitialState(LogicalModel model, String s) {
+    public static byte[] parseInitialState(int size, String s) {
         int n = s.length();
-        int k = model.getComponents().size();
-        if (n != k) {
-            throw new RuntimeException("Length of initial state mismatch: "+n + " (expected: "+k+")");
+        if (n != size) {
+            throw new RuntimeException("Length of initial state mismatch: "+n + " (expected: "+size+")");
         }
 
         byte[] state = new byte[n];
