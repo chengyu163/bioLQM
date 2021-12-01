@@ -44,26 +44,20 @@ public class TestNamedState {
 	@Test
 	public void TestInitialStateWithNamedState1 () {
 		LogicalModel model = getModel();
-		NamedState ns = new NamedState();
-		ns.setModelSize(model.getComponents().size());
-		ns.parseNamedStateFile("src/test/java/org/colomoto/biolqm/named_states.txt");
-		InitialStates state = new InitialStates();
-		state.setPattern("state1");
-		state.parsePatternToStates(model, ns);
+		model.parseNamedStateFile("src/test/java/org/colomoto/biolqm/named_states.txt");
+		model.setPattern("state1");
+		model.parsePatternToStates();
 		byte[] expectedIS = {0,0,0,1};
-		assertTrue(Arrays.equals(expectedIS, state.getRandomState()));
+		assertTrue(Arrays.equals(expectedIS, model.getRandomState()));
 	}
 	
 	@Test
 	public void TestInitialStateWithNamedState2 () {
 		LogicalModel model = getModel();
-		NamedState ns = new NamedState();
-		ns.setModelSize(model.getComponents().size());
-		ns.parseNamedStateFile("src/test/java/org/colomoto/biolqm/named_states.txt");
-		InitialStates state = new InitialStates();
-		state.setPattern("state2");
-		state.parsePatternToStates(model, ns);
+		model.parseNamedStateFile("src/test/java/org/colomoto/biolqm/named_states.txt");
+		model.setPattern("state2");
+		model.parsePatternToStates();
 		byte[] expectedIS = {0,1,1,1};
-		assertTrue(Arrays.equals(expectedIS, state.getRandomState()));
+		assertTrue(Arrays.equals(expectedIS, model.getRandomState()));
 	}
 }

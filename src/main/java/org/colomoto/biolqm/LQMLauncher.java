@@ -65,29 +65,20 @@ public class LQMLauncher {
 		
 		if(ArrayUtils.contains(args, "-ns")){
 			int index = ArrayUtils.indexOf(args, "-ns");
-			String fileName = args[index+1];
-			NamedState namedStates = NamedState.getInstance();
-			namedStates.setModelSize(model.getComponents().size());
-			namedStates.parseNamedStateFile(fileName);
+			String namedState = args[index+1];
+			model.parseNamedStateFile(namedState);
 			args = ArrayUtils.remove(args, index+1);
 			args = ArrayUtils.remove(args, index);
 		}
 		
 		if(ArrayUtils.contains(args, "-i")) {
 			int index = ArrayUtils.indexOf(args, "-i");
-			String pattern = args[index+1]; 
-			/* the pattern can be a named state or union of states specified */
-			InitialStates initialStates = InitialStates.getInstace();
-			initialStates.setPattern(pattern);
+			String pattern = args[index+1];
+			model.setPattern(pattern);
 			args = ArrayUtils.remove(args, index+1);
 			args = ArrayUtils.remove(args, index);
 		}
-		
-		/*code used for the lazy initialization of named state and initial states */
-		InitialStates initialStates = InitialStates.getInstace();
-		NamedState namedStates = NamedState.getInstance();
-		initialStates.parsePatternToStates(model, namedStates);
-		
+		model.parsePatternToStates();
 		while (true) {
 			if ("-m".equals(args[argIdx])) {
 				if (args.length < argIdx+3) {

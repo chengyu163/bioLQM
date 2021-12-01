@@ -1,15 +1,26 @@
 package org.colomoto.biolqm;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.colomoto.mddlib.MDDManager;
 import org.json.JSONObject;
 import org.colomoto.biolqm.metadata.AnnotationModule;
 import org.colomoto.biolqm.metadata.NodeInfoPair;
 import org.colomoto.biolqm.metadata.annotations.Metadata;
+import org.colomoto.biolqm.tool.simulation.InitialStateFactory;
 
 /**
  * Implementation of the LogicalModel interface.
@@ -25,6 +36,10 @@ public class LogicalModelImpl implements LogicalModel {
 	
 	private final List<NodeInfo> extraNodes;
 	private final int[] extraFunctions;
+	
+	private List<byte []> initialStates;
+	private String pattern;
+	private Map<String, byte[]> namedStates;
 
 	private ModelLayout layout = null;
 	
@@ -34,6 +49,8 @@ public class LogicalModelImpl implements LogicalModel {
 		this.ddmanager = ddmanager.getManager(coreNodes);
 		this.coreNodes = coreNodes;
 		this.coreFunctions = coreFunctions;
+		initialStates = new ArrayList<byte[]>();
+		namedStates = new HashMap<String, byte[]>();
 		
 		if (extraNodes == null) {
 			this.extraNodes = new ArrayList<>();
@@ -336,5 +353,107 @@ public class LogicalModelImpl implements LogicalModel {
 	@Override
 	public AnnotationModule getAnnotationModule() {
 		return this.annotationModule;
+	}
+	
+	/** functions to get/set intialstate and named states, as well as their parsing**/
+	
+	public List<byte[]> getInitialStates(){
+		return initialStates;
+	}
+
+	public void parsePatternToStates() {
+		int modelSize = this.getComponents().size();
+		if (pattern == null) {
+			byte[] stateSpace = new byte[modelSize];
+			Arrays.fill(stateSpace, (byte)-1);
+			initialStates.add(stateSpace);
+			return;
+		}
+		if(!pattern.matches("^[\\\\*012-]+$") && !namedStates.isEmpty()) 
+			namedStates.entrySet().stream().
+			filter(namedState -> Objects.equals(namedState.getKey(), pattern))
+			.map(Map.Entry::getValue)
+			.forEachOrdered(initialStates::add);
+		else
+			Arrays.stream(pattern.split("-")).
+			map(state -> InitialStateFactory.parseInitialState(modelSize, state)).
+			forEachOrdered(initialStates::add);
+	}
+	
+	public void parseNamedStateFile(String fileName) {
+		String line;
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+			while ((line = br.readLine()) != null) {
+				if (line.trim().isEmpty()) {
+			        continue;
+			    }
+				String[] namedState = line.split(" ");
+				byte[] s = InitialStateFactory.parseInitialState(this.getComponents().size(), namedState[1]);
+				namedStates.put(namedState[0], s);
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String stateToNamedState(byte[] state) {
+		String stateInString = stateToStringPattern(state);
+		Map<String, String> ns = new HashMap<String, String>();
+		for (Entry<String, byte[]> entry : namedStates.entrySet()) 
+			ns.put(entry.getKey(), stateToStringPattern(entry.getValue()));
+		
+		Matcher matcher = Pattern.compile("("+String.join("|", 
+				ns.values())+")").matcher(stateInString);
+				
+		StringBuffer pattern = new StringBuffer();
+		while(matcher.find()) {
+		    matcher.appendReplacement(pattern, getPatternFromState(matcher.group(), ns));
+		}
+		matcher.appendTail(pattern);
+		return pattern.toString();
+	}
+	
+	public String getPatternFromState(String state, Map<String, String> map) {
+		StringBuffer sb = new StringBuffer();
+		for (Entry<String, String> entry : map.entrySet()) {
+			if(state.matches(entry.getValue())) {
+				sb.append("["+entry.getKey()+"]");
+			}
+		}
+		return sb.toString();
+	}
+	
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+	
+	private String stateToStringPattern(byte[] values) {
+		StringBuffer sb = new StringBuffer();
+		for (byte b : values) {
+			if(b == -1) 
+				sb.append("[0-2]");
+			else 
+				sb.append(b);
+		}
+		return sb.toString();
+	}
+	
+	public byte[] getRandomState() {
+		List<NodeInfo> nodes = this.getComponents();
+		Random r = new Random();
+
+		/** A: select state conditions **/
+		byte[] state = initialStates.get(r.nextInt(initialStates.size()));
+		
+		/** B: generate state satisfying conditions **/
+		byte[] newstate = new byte[state.length];
+	
+		for(int i=0, l=nodes.size(); i<l; i++) 
+			if(state[i]==-1) newstate[i]=(byte)r.nextInt(nodes.get(i).getMax()+1);
+			else newstate[i]=state[i];
+		return newstate;
 	}
 }

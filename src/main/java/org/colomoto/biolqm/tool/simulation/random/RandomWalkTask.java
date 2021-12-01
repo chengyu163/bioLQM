@@ -1,6 +1,5 @@
 package org.colomoto.biolqm.tool.simulation.random;
 
-import org.colomoto.biolqm.InitialStates;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.tool.AbstractToolTask;
 import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
@@ -8,12 +7,13 @@ import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
 public class RandomWalkTask extends AbstractToolTask<RandomWalkSimulation> {
 
     String updater_config = null;
-    byte[] state = InitialStates.getInstace().getRandomState();
+    byte[] state;
     int max_steps = 1000;
     int seed = -1;
 
     public RandomWalkTask(LogicalModel model) {
         super(model);
+        state = model.getRandomState();
     }
 
     @Override

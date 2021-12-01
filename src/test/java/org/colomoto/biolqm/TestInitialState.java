@@ -45,24 +45,20 @@ class TestInitialState {
 	@Test
 	public void TestInitialStateWithARandomState () {
 		LogicalModel model = getModel();
-		NamedState ns = new NamedState();
-		InitialStates state = new InitialStates();
-		state.setPattern("0*1*");
-		state.parsePatternToStates(model, ns);
+		model.setPattern("0*1*");
+		model.parsePatternToStates();
 		byte[] expectedIS = {0,-1,1,-1};
-		assertTrue(state.initialStates.size() == 1);
-		assertTrue(Arrays.equals(expectedIS, state.initialStates.get(0)));
+		assertTrue(model.getInitialStates().size() == 1);
+		assertTrue(Arrays.equals(expectedIS, model.getInitialStates().get(0)));
 	}
 	
 	@Test
 	public void TestInitialStateWithStateSpace () {
 		LogicalModel model = getModel();
-		NamedState ns = new NamedState();
-		InitialStates state = new InitialStates();
-		state.parsePatternToStates(model, ns);
 		byte[] expectedIS = {-1,-1,-1,-1};
-		assertTrue(state.initialStates.size() == 1);
-		assertTrue(Arrays.equals(expectedIS, state.initialStates.get(0)));
+		model.parsePatternToStates();
+		assertTrue(model.getInitialStates().size() == 1);
+		assertTrue(Arrays.equals(expectedIS, model.getInitialStates().get(0)));
 	}
 	
 }

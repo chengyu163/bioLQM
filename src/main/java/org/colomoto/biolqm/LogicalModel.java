@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.colomoto.mddlib.MDDManager;
 import org.json.JSONArray;
@@ -264,4 +268,19 @@ public interface LogicalModel {
 	 * @return the annotation module
 	 */
 	AnnotationModule getAnnotationModule();
+	
+	List<byte[]> getInitialStates();
+	
+	void parseNamedStateFile(String fileName);
+	
+	void parsePatternToStates();
+	
+	void setPattern(String pattern);
+	
+	byte[] getRandomState();
+
+	String stateToNamedState(byte[] state);
+	
+	String getPatternFromState(String state, Map<String, String> map);
+	
 }

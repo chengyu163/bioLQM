@@ -1,6 +1,5 @@
 package org.colomoto.biolqm.tool.simulation.deterministic;
 
-import org.colomoto.biolqm.InitialStates;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.tool.AbstractToolTask;
 import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
@@ -8,12 +7,13 @@ import org.colomoto.biolqm.tool.simulation.UpdaterFactory;
 public class TraceTask extends AbstractToolTask<DeterministicSimulation> {
 
     String updater_config = null;
-    byte[] state = InitialStates.getInstace().getRandomState();
+    byte[] state;
     int max_steps = 1000;
     int length = 100;
 
     public TraceTask(LogicalModel model) {
         super(model);
+        state = model.getRandomState();
     }
 
     @Override

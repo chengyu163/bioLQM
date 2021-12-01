@@ -1,7 +1,5 @@
 package org.colomoto.biolqm.tool.simulation;
 
-import org.colomoto.biolqm.LogicalModel;
-
 public class InitialStateFactory {
 
     public static byte[] parseInitialState(int size, String s) {
